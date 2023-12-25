@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sample Table</title>
+    <style>
+        html,
+body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	background: linear-gradient(45deg, #49a09d, #5f2c82);
+	font-family: sans-serif;
+	font-weight: 100;
+}
+
+.container {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+table {
+	width: 800px;
+	border-collapse: collapse;
+	overflow: hidden;
+	box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+th,
+td {
+	padding: 15px;
+	background-color: rgba(255,255,255,0.2);
+	color: #fff;
+}
+
+h2 {
+            font-size: 24px; /* Adjust the font size as needed */
+            font-weight: bold; /* Make the text bold */
+            text-align: center; /* Center-align the text */
+            color: #333; /* Set the text color */
+            /* Add more styles as needed */
+        }
+
+th {
+	text-align: left;
+}
+
+thead {
+	th {
+		background-color: #55608f;
+	}
+}
+
+/* Additional Styles for the Diagnoses Section */
+#checkDiagnosisForm {
+    margin-top: 20px;
+    background-color: rgba(255,255,255,0.2);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+#checkDiagnosisForm label,
+#checkDiagnosisForm input[type="number"],
+#checkDiagnosisForm input[type="submit"] {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#checkDiagnosisForm label {
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+#checkDiagnosisForm input[type="submit"] {
+    background-color: #55608f;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+#checkDiagnosisForm input[type="submit"]:hover {
+    background-color: #6a7ba2;
+}
+
+#diagnosisResults {
+    margin-top: 20px;
+    background-color: rgba(255,255,255,0.3);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+/* Style adjustments for the results table could also be added here */
+
+
+tbody {
+	tr {
+		&:hover {
+			background-color: rgba(255,255,255,0.3);
+		}
+	}
+	td {
+		position: relative;
+		&:hover {
+			&:before {
+				content: "";
+				position: absolute;
+				left: 0;
+				right: 0;
+				top: -9999px;
+				bottom: -9999px;
+				background-color: rgba(255,255,255,0.2);
+				z-index: -1;
+			}
+		}
+	}
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Check Previous Diagnosis</h2>
+        <form id="checkDiagnosisForm">
+            <label for="patientid">Patient ID:</label>
+            <input type="number" id="patientid" name="patientid" required><br><br>
+            <input type="submit" value="Check Diagnoses">
+        </form>
+
+        <table id="diagnosisTable">
+            <thead>
+                <tr>
+                    <th>Diagnosis ID</th>
+                    <th>Patient ID</th>
+                    <th>Doctor ID</th>
+                    <th>Diagnosis Date</th>
+                    <th>Diagnosis Details</th>
+                    <th>Treatment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Diagnosis data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        document.getElementById('checkDiagnosisForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const patientid = document.getElementById('patientid').value;
+
+    fetch(`/api/get-diagnosis/${patientid}`)
+        .then(response => response.json())
+        .then(data => {
+            const table = document.getElementById('diagnosisTable').getElementsByTagName('tbody')[0];
+            table.innerHTML = ''; // Clear existing rows
+            data.forEach(diagnosis => {
+                let row = table.insertRow();
+                row.insertCell(0).innerHTML = diagnosis.diagnosisid;
+                row.insertCell(1).innerHTML = diagnosis.patientid;
+                row.insertCell(2).innerHTML = diagnosis.doctorid;
+                row.insertCell(3).innerHTML = diagnosis.diagnosisdate;
+                row.insertCell(4).innerHTML = diagnosis.diagnosisdetails;
+                row.insertCell(5).innerHTML = diagnosis.treatment;
+            });
+        })
+        .catch(error => console.error('Error:', error));
+});
+
+    </script>
+</body>
+</html>
